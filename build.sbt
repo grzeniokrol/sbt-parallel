@@ -1,3 +1,6 @@
+import sbt.complete.DefaultParsers._
+import sbt.complete.Parser
+
 name := {
   println("I love my name!")
   "parallel"
@@ -75,5 +78,36 @@ gitHeadCommitSha := Process("git rev-parse HEAD").lines.head
 val combinedProcess = taskKey[Int]("Process combined from two")
 
 combinedProcess := {
+  //  ("cd process; ls -la") !
   ("cd process" #&& "ls -la") !
+}
+
+
+
+
+
+
+
+// USER INPUT TASK
+val myEnv: Parser[(String, String)] = {
+  val env: Parser[String] = (token("local") | token("dev") | token("qa")).examples(Set("local", "qa", "dev"))
+  val importantNumber: Parser[String] = Digit.+ map(_.mkString)
+
+  token(Space ~> env <~ Space) ~ importantNumber
+}
+
+val printParsed = inputKey[Unit]("Check my env and very important number.")
+
+printParsed := {
+  println(myEnv.parsed)
+}
+
+val run2 = inputKey[Unit]("I wonder what will it do!")
+
+val separator: Parser[String] = token("--")
+
+run2 := {
+  (run in Compile).evaluated
+  separator.parsed
+  (run in Compile).evaluated
 }
