@@ -1,2 +1,2 @@
 # sbt-parallel
-SBT example for parallel tasks
+SBT useful, small examples
